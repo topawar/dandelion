@@ -1,4 +1,4 @@
-package com.topawar.maker.cli.command;
+package ${basePackage}.cli.command;
 
 import cn.hutool.core.io.FileUtil;
 import picocli.CommandLine;
@@ -15,7 +15,7 @@ public class ListCommand implements Runnable{
     public void run() {
         String parentPath = System.getProperty("user.dir");
         File parentFile = new File(parentPath).getParentFile();
-        String inputPath = new File(parentFile, "dandelion-generator-demo-projects/acm-template").getAbsolutePath();
+        String inputPath = new File(parentFile, "${fileConfig.inputRootPath}").getAbsolutePath();
         List<File> files = FileUtil.loopFiles(inputPath);
         for (File file : files) {
             System.out.println(file);

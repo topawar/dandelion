@@ -1,8 +1,8 @@
-package com.topawar.maker.cli;
+package com.topawar.cli;
 
-import com.topawar.maker.cli.command.ConfigCommand;
-import com.topawar.maker.cli.command.GenerateCommand;
-import com.topawar.maker.cli.command.ListCommand;
+import com.topawar.cli.command.ConfigCommand;
+import com.topawar.cli.command.GenerateCommand;
+import com.topawar.cli.command.ListCommand;
 import picocli.CommandLine;
 
 /**

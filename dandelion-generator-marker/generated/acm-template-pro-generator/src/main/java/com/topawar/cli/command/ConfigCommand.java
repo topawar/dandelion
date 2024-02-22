@@ -1,7 +1,7 @@
-package com.topawar.maker.cli.command;
+package com.topawar.cli.command;
 
 import cn.hutool.core.util.ReflectUtil;
-import com.topawar.maker.model.DataModel;
+import com.topawar.model.DataModel;
 import picocli.CommandLine;
 
 import java.lang.reflect.Field;
