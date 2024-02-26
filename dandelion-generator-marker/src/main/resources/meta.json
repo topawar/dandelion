@@ -6,8 +6,9 @@
   "author": "topawar",
   "createTime": "2024-2-20",
   "fileConfig": {
-    "inputRootPath": "D:/Project/ideaProject/dandelion/dandelion-generator-demo-projects/acm-template-pro",
-    "outputRootPath": "generated",
+    "inputRootPath": ".source/acm-template-pro",
+    "outputRootPath": "D:/Project/ideaProject/dandelion/acm-template-pro",
+    "sourceRootPath": "D:/Project/ideaProject/dandelion/dandelion-generator-demo-projects/acm-template-pro",
     "type": "dir",
     "files": [
       {

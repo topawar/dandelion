@@ -5,7 +5,6 @@ import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.StrUtil;
 import com.topawar.maker.meta.Meta;
 import com.topawar.maker.meta.MetaManager;
-import com.topawar.maker.model.DataModel;
 import freemarker.template.TemplateException;
 
 import java.io.File;
@@ -14,34 +13,58 @@ import java.io.IOException;
 /**
  * @author topawar
  */
-public class MainGenerator extends GenerateTemplate{
-
-//    public static void doGenerate(DataModel dataModel) throws TemplateException, IOException {
-//        String inputRootPath = "D:\\Project\\ideaProject\\dandelion\\dandelion-generator-demo-projects\\acm-template-pro";
-//        String outputRootPath = "D:\\Project\\ideaProject\\dandelion\\acm-template-pro";
-//        //动态生成文件
-//        String inputPath = new File(inputRootPath, "src/com/yupi/acm/MainTemplate.java.ftl").getAbsolutePath();
-//        String outputPath = new File(outputRootPath, "src/com/yupi/acm/MainTemplate.java").getAbsolutePath();
-//        DynamicFileGenerator.doGenerate(inputPath, outputPath, dataModel);
-//        //生成静态文件
-//        inputPath = new File(inputRootPath, ".gitignore").getAbsolutePath();
-//        outputPath = new File(outputRootPath, ".gitignore").getAbsolutePath();
-//        StaticFileGenerator.copyFilesByHutool(inputPath, outputPath);
-//        inputPath = new File(inputRootPath, "README.MD").getAbsolutePath();
-//        outputPath = new File(outputRootPath, "README.MD").getAbsolutePath();
-//        StaticFileGenerator.copyFilesByHutool(inputPath, outputPath);
-//    }
-
-    public static void main(String[] args) throws TemplateException, IOException {
+public class GenerateTemplate {
+    public void doGenerate() throws TemplateException, IOException, InterruptedException {
         //初始化meta对象
         Meta meta = MetaManager.getMetaObject();
         //获取生成文件的路径
         String projectPath = System.getProperty("user.dir");
-        String outputPath = projectPath + File.separator  + File.separator + meta.getName();
+        String outputPath = projectPath + File.separator + File.separator + meta.getName();
         //不存在则创建
         if (!FileUtil.exist(outputPath)) {
             FileUtil.mkdir(outputPath);
         }
+        //复制文件到.source文件夹下
+        String sourceCopyDestPath = copySource(meta, outputPath);
+        //生成代码文件
+        generateCode(meta, outputPath);
+        //封装 jar包
+        String jarPath = buildJar(meta,outputPath);
+        //生成脚本文件
+        String shellOutputFilePath = buildScript(outputPath, jarPath);
+
+        //生成产物包
+        buildDist(outputPath, sourceCopyDestPath, jarPath, shellOutputFilePath);
+    }
+
+    protected void buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath){
+        String distOutputPath = outputPath + "-dist";
+        // 拷贝 jar 包
+        String targetAbsolutePath = distOutputPath + File.separator + "target";
+        FileUtil.mkdir(targetAbsolutePath);
+        String jarAbsolutePath = outputPath + File.separator + jarPath;
+        FileUtil.copy(jarAbsolutePath, targetAbsolutePath, true);
+        // 拷贝脚本文件
+        FileUtil.copy(shellOutputFilePath, distOutputPath, true);
+        FileUtil.copy(shellOutputFilePath+".bat", distOutputPath, true);
+        // 拷贝源模板文件
+        FileUtil.copy(sourceCopyDestPath, distOutputPath, true);
+    }
+
+    protected String buildScript(String outputPath, String jarPath) {
+        String shellOutputFilePath = outputPath + File.separator + "exec";
+        ScriptGenerator.doGenerator(shellOutputFilePath, jarPath);
+        return shellOutputFilePath;
+    }
+
+    protected String buildJar(Meta meta,String outputPath) throws IOException, InterruptedException {
+        JarGenerator.doGenerate(outputPath);
+        String jarName = String.format("%s-%s-SNAPSHOT-jar-with-dependencies.jar", meta.getName(), meta.getVersion());
+        String jarPath = "target/" + jarName;
+        return jarPath;
+    }
+
+    protected void generateCode(Meta meta, String outputPath) throws IOException, TemplateException {
         //读取resource
         ClassPathResource classPathResource = new ClassPathResource("");
         String resourceAbsolutePath = classPathResource.getAbsolutePath();
@@ -87,11 +110,6 @@ public class MainGenerator extends GenerateTemplate{
         outputFilePath = outputBaseJavaPackagePath + "/Main.java";
         DynamicFileGenerator.doGenerate(inputFilePath, outputFilePath, meta);
 
-        //复制文件到.source文件夹下
-        inputFilePath = meta.getFileConfig().getSourceRootPath();
-        outputFilePath = outputPath + File.separator + ".source";
-        FileUtil.copy(inputFilePath, outputFilePath,false);
-
         //动态生成pom文件
         inputFilePath = resourceAbsolutePath + File.separator + "templates/pom.xml.ftl";
         outputFilePath = outputPath + File.separator + "pom.xml";
@@ -101,17 +119,13 @@ public class MainGenerator extends GenerateTemplate{
         inputFilePath = resourceAbsolutePath + File.separator + "templates/README.MD.ftl";
         outputFilePath = outputPath + File.separator + "README.MD";
         DynamicFileGenerator.doGenerate(inputFilePath, outputFilePath, meta);
-
-        //生成脚本文件
-        String shellOutputFilePath = outputPath + File.separator + "exec";
-        //acm-template-pro-generator-1.0-SNAPSHOT.jar
-        String jarName = String.format("%s-%s-SNAPSHOT-jar-with-dependencies.jar", meta.getName(), meta.getVersion());
-        String jarPath = "target/" + jarName;
-        ScriptGenerator.doGenerator(shellOutputFilePath, jarPath);
     }
 
-    @Override
-    protected void buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath) {
-        System.out.println("不生成产物包");
+    protected String copySource(Meta meta, String outputPath) {
+        String sourcePath = meta.getFileConfig().getSourceRootPath();
+        String sourceCopyDestPath = outputPath + File.separator + ".source";
+        FileUtil.copy(sourcePath, sourceCopyDestPath, false);
+        return sourceCopyDestPath;
     }
+
 }

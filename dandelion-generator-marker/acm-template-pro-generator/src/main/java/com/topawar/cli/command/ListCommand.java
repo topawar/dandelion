@@ -15,7 +15,7 @@ public class ListCommand implements Runnable{
     public void run() {
         String parentPath = System.getProperty("user.dir");
         File parentFile = new File(parentPath).getParentFile();
-        String inputPath = new File(parentFile, "D:/Project/ideaProject/dandelion/dandelion-generator-demo-projects/acm-template-pro").getAbsolutePath();
+        String inputPath = new File(parentFile, ".source/acm-template-pro").getAbsolutePath();
         List<File> files = FileUtil.loopFiles(inputPath);
         for (File file : files) {
             System.out.println(file);

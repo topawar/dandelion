@@ -12,8 +12,8 @@ import java.io.IOException;
 public class MainGenerator {
 
 public static void doGenerate(DataModel dataModel) throws TemplateException, IOException {
-String inputRootPath ="D:/Project/ideaProject/dandelion/dandelion-generator-demo-projects/acm-template-pro";
-String outputRootPath ="generated";
+String inputRootPath =".source/acm-template-pro";
+String outputRootPath ="D:/Project/ideaProject/dandelion/acm-template-pro";
 String inputPath;
 String outputPath;
      inputPath = new File(inputRootPath, "src/com/yupi/acm/MainTemplate.java.ftl").getAbsolutePath();
