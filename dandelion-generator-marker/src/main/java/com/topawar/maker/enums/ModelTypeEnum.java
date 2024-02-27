@@ -5,7 +5,8 @@ package com.topawar.maker.enums;
  */
 public enum ModelTypeEnum {
     STRING("字符串","String"),
-    BOOLEAN("布尔","boolean");
+    BOOLEAN("布尔","boolean"),
+    MAINTEMPLATE("核心模板","MainTemplate");
 
     private final String text;
     private final String value;

@@ -11,6 +11,7 @@ import com.topawar.maker.enums.ModelTypeEnum;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 元数据信息校验
@@ -36,6 +37,15 @@ public class MetaValidator {
             return;
         }
         for (Meta.ModelConfig.ModelInfo model : models) {
+            String groupKey = model.getGroupKey();
+            //生成中间参数
+            if (StrUtil.isNotEmpty(groupKey)){
+                String argsAll=model.getModels().stream()
+                        .map(subModelInfo-> String.format("\"--%s\"",subModelInfo.getFieldName()))
+                        .collect(Collectors.joining(", "));
+                model.setAllArgs(argsAll);
+                continue;
+            }
             String fieldName = model.getFieldName();
             if (StrUtil.isBlank(fieldName)) {
                 throw new MetaException("字段名不能为空");
@@ -72,7 +82,7 @@ public class MetaValidator {
         }
 
         String type = fileConfig.getType();
-        String defaultType = FileTypeEnum.DIR.getText();
+        String defaultType = FileTypeEnum.DIR.getValue();
         if (StrUtil.isEmpty(type)) {
             fileConfig.setType(defaultType);
         }
@@ -83,6 +93,12 @@ public class MetaValidator {
             return;
         }
         for (Meta.FileConfig.FileInfo fileInfo : fileInfos) {
+
+            // 有后缀为文件，无后缀为文件夹，分组不校验
+            String fileInfoType = fileInfo.getType();
+            if (FileTypeEnum.GROUP.getValue().equals(fileInfoType)) {
+                continue;
+            }
             //inputpath 校验
             String inputPath = fileInfo.getInputPath();
             if (StrUtil.isBlank(inputPath)) {
@@ -94,8 +110,7 @@ public class MetaValidator {
                 String subInputPath = inputPath.substring(0, inputPath.length() - 4);
                 fileInfo.setOutputPath(subInputPath);
             }
-            // 有后缀为文件，无后缀为文件夹
-            String fileInfoType = fileInfo.getType();
+
             if (StrUtil.isBlank(fileInfoType)) {
                 if (StrUtil.isBlank(FileUtil.getSuffix(inputPath))) {
                     fileInfo.setType(FileTypeEnum.FILE.getValue());

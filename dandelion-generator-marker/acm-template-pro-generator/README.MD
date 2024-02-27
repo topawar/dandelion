@@ -16,12 +16,12 @@ generate <子命令>
 
 ## 示例
 ```
-generator generate -l -a -o 
+generator --help
 ```
 
 ## 参数说明
 | 名称                   | 类型              | 描述                     | 默认值                      | 缩写               |
 | ---------------------- | ----------------- | ------------------------ | --------------------------- | ------------------ |
-| loop | boolean | 是否生成循环 | false | -l |
-| author | String | 作者注释 | "yupi" | -a |
-| outputText | String | 输出信息 | "sum = " | -o |
+|    loop | boolean | 是否生成循环 | false | -l |
+|    needGit | boolean | 是否生成git文件 | true | -n |
+|    mainTemplate | MainTemplate | 核心模板 | loop |  |

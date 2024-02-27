@@ -16,12 +16,16 @@ generate <子命令>
 
 ## 示例
 ```
-generator generate <#list modelConfig.models as modelInfo>-${modelInfo.abbr} </#list>
+generator --help
 ```
 
 ## 参数说明
 | 名称                   | 类型              | 描述                     | 默认值                      | 缩写               |
 | ---------------------- | ----------------- | ------------------------ | --------------------------- | ------------------ |
 <#list modelConfig.models as modelInfo>
-| ${modelInfo.fieldName} | ${modelInfo.type} | ${modelInfo.description} | ${modelInfo.defaultValue?c} | -${modelInfo.abbr} |
+<#if modelInfo.groupKey??>
+|    ${modelInfo.groupKey} | ${modelInfo.type} | ${modelInfo.groupName} | ${modelInfo.condition} |  |
+<#else>
+|    ${modelInfo.fieldName} | ${modelInfo.type} | ${modelInfo.description} | ${modelInfo.defaultValue?c} | -${modelInfo.abbr} |
+</#if>
 </#list>

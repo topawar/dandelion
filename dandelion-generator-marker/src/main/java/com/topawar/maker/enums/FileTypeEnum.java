@@ -5,6 +5,7 @@ package com.topawar.maker.enums;
  */
 public enum FileTypeEnum {
     DIR("目录","dir"),
+    GROUP("分组","group"),
     FILE("文件","file");
 
     private final String text;

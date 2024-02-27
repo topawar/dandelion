@@ -2,22 +2,37 @@ package com.topawar.model;
 
 import lombok.Data;
 
+
 /**
  * 数据模型
  */
 @Data
 public class DataModel {
 
-     /**
-     * 是否生成循环
-     */
-    private boolean loop =false ;
-     /**
-     * 作者注释
-     */
-    private String author ="yupi" ;
-     /**
-     * 输出信息
-     */
-    private String outputText ="sum = " ;
+        /**
+        * 是否生成循环
+        */
+    public boolean loop =false ;
+        /**
+        * 是否生成git文件
+        */
+    public boolean needGit =true ;
+            /**
+            * 核心模板
+            */
+        public MainTemplate mainTemplate = new MainTemplate();
+        /**
+        * 用于生成核心模板文件
+        */
+        @Data
+        public static class MainTemplate {
+        /**
+        * 作者注释
+        */
+    public String author ="yupi" ;
+        /**
+        * 输出信息
+        */
+    public String outputText ="sum = " ;
+        }
 }
