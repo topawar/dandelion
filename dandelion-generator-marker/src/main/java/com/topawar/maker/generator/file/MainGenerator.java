@@ -5,7 +5,6 @@ import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.StrUtil;
 import com.topawar.maker.meta.Meta;
 import com.topawar.maker.meta.MetaManager;
-import com.topawar.maker.model.DataModel;
 import freemarker.template.TemplateException;
 
 import java.io.File;
@@ -16,21 +15,6 @@ import java.io.IOException;
  */
 public class MainGenerator extends GenerateTemplate{
 
-//    public static void doGenerate(DataModel dataModel) throws TemplateException, IOException {
-//        String inputRootPath = "D:\\Project\\ideaProject\\dandelion\\dandelion-generator-demo-projects\\acm-template-pro";
-//        String outputRootPath = "D:\\Project\\ideaProject\\dandelion\\acm-template-pro";
-//        //动态生成文件
-//        String inputPath = new File(inputRootPath, "src/com/yupi/acm/MainTemplate.java.ftl").getAbsolutePath();
-//        String outputPath = new File(outputRootPath, "src/com/yupi/acm/MainTemplate.java").getAbsolutePath();
-//        DynamicFileGenerator.doGenerate(inputPath, outputPath, dataModel);
-//        //生成静态文件
-//        inputPath = new File(inputRootPath, ".gitignore").getAbsolutePath();
-//        outputPath = new File(outputRootPath, ".gitignore").getAbsolutePath();
-//        StaticFileGenerator.copyFilesByHutool(inputPath, outputPath);
-//        inputPath = new File(inputRootPath, "README.MD").getAbsolutePath();
-//        outputPath = new File(outputRootPath, "README.MD").getAbsolutePath();
-//        StaticFileGenerator.copyFilesByHutool(inputPath, outputPath);
-//    }
 
     public static void main(String[] args) throws TemplateException, IOException {
         //初始化meta对象
