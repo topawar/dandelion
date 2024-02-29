@@ -9,7 +9,7 @@ import lombok.Data;
  * @param <T>
  */
 @Data
-public class ${outputText}<T> implements Serializable {
+public class ${className}<T> implements Serializable {
 
     private int code;
 
@@ -17,17 +17,17 @@ public class ${outputText}<T> implements Serializable {
 
     private String message;
 
-    public ${outputText}(int code, T data, String message) {
+    public ${className}(int code, T data, String message) {
         this.code = code;
         this.data = data;
         this.message = message;
     }
 
-    public ${outputText}(int code, T data) {
+    public ${className}(int code, T data) {
         this(code, data, "");
     }
 
-    public ${outputText}(ErrorCode errorCode) {
+    public ${className}(ErrorCode errorCode) {
         this(errorCode.getCode(), null, errorCode.getMessage());
     }
 }

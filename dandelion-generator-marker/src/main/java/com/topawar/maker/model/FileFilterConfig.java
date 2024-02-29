@@ -1,11 +1,13 @@
 package com.topawar.maker.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * @author topawar
  */
 @Data
+@Builder
 public class FileFilterConfig {
     /**
      * 过滤范围
