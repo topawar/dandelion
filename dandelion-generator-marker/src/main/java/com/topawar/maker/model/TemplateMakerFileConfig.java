@@ -14,9 +14,11 @@ public class TemplateMakerFileConfig {
     private List<FileInfoConfig> fileInfoConfigList;
 
     /**
-     * 分组
+     * 文件分组配置
      */
     private FileGroupConfig fileGroupConfig;
+
+
 
     @Data
     @NoArgsConstructor
@@ -52,4 +54,5 @@ public class TemplateMakerFileConfig {
          */
         private String condition;
     }
+
 }

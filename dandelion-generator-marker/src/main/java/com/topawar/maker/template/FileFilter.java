@@ -28,7 +28,7 @@ public class FileFilter {
         //所有过滤器校验结束的结果
         boolean result = true;
         if (CollectionUtil.isEmpty(fileFilterConfigList)) {
-            return false;
+            return true;
         }
 
         for (FileFilterConfig fileFilterConfig : fileFilterConfigList) {

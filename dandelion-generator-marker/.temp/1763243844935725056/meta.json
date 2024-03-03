@@ -11,20 +11,14 @@
                 "condition": "outputText",
                 "files": [
                     {
-                        "inputPath": "src/main/java/com/yupi/springbootinit/controller/UserController.java",
-                        "outputPath": "src/main/java/com/yupi/springbootinit/controller/UserController.java.ftl",
+                        "inputPath": "src/main/java/com/yupi/springbootinit/common/BaseResponse.java.ftl",
+                        "outputPath": "src/main/java/com/yupi/springbootinit/common/BaseResponse.java",
                         "type": "file",
                         "generateType": "dynamic"
                     },
                     {
-                        "inputPath": "src/main/java/com/yupi/springbootinit/controller/PostController.java",
-                        "outputPath": "src/main/java/com/yupi/springbootinit/controller/PostController.java.ftl",
-                        "type": "file",
-                        "generateType": "dynamic"
-                    },
-                    {
-                        "inputPath": "src/main/java/com/yupi/springbootinit/common/BaseResponse.java",
-                        "outputPath": "src/main/java/com/yupi/springbootinit/common/BaseResponse.java.ftl",
+                        "inputPath": "src/main/resources/application.yml.ftl",
+                        "outputPath": "src/main/resources/application.yml",
                         "type": "file",
                         "generateType": "dynamic"
                     }
@@ -35,8 +29,12 @@
     "modelConfig": {
         "models": [
             {
+                "needGit": false
+            },
+            {
                 "fieldName": "className",
                 "type": "String",
+                "defaultValue": "BaseResponse",
                 "needGit": false
             }
         ]
