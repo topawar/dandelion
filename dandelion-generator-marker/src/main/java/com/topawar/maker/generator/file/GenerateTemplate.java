@@ -116,9 +116,9 @@ public class GenerateTemplate {
         DynamicFileGenerator.doGenerate(inputFilePath, outputFilePath, meta);
 
         //生成REDAME.MD 文件
-        inputFilePath = resourceAbsolutePath + File.separator + "templates/README.MD.ftl";
-        outputFilePath = outputPath + File.separator + "README.MD";
-        DynamicFileGenerator.doGenerate(inputFilePath, outputFilePath, meta);
+//        inputFilePath = resourceAbsolutePath + File.separator + "templates/README.MD.ftl";
+//        outputFilePath = outputPath + File.separator + "README.MD";
+//        DynamicFileGenerator.doGenerate(inputFilePath, outputFilePath, meta);
     }
 
     protected String copySource(Meta meta, String outputPath) {

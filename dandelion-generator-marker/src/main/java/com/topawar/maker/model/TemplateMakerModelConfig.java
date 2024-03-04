@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class TemplateMakerModelConfig {
 
-    private List<ModelInfoConfig> modelInfoConfigs;
+    private List<ModelInfoConfig> models;
 
     /**
      * 模型分组
@@ -68,5 +68,9 @@ public class TemplateMakerModelConfig {
          * 条件
          */
         private String condition;
+
+        private String type;
+
+        private String description;
     }
 }

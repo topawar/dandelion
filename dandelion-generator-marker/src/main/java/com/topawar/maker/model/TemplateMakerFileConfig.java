@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class TemplateMakerFileConfig {
 
-    private List<FileInfoConfig> fileInfoConfigList;
+    private List<FileInfoConfig> files;
 
     /**
      * 文件分组配置
@@ -31,7 +31,10 @@ public class TemplateMakerFileConfig {
         /**
          * 过滤规则列表
          */
-        private List<FileFilterConfig> fileFilterConfigList;
+        private List<FileFilterConfig> filterConfigList;
+
+        private String condition;
+
     }
 
     /**
