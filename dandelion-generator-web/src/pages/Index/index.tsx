@@ -1,6 +1,6 @@
 import {PageContainer, ProFormSelect, ProFormText, QueryFilter} from '@ant-design/pro-components';
 import React, {useEffect, useState} from 'react';
-import {Avatar, Card, Flex, List, message, Tabs, TabsProps} from "antd";
+import {Avatar, Card, Flex, List, message, Tabs, TabsProps, Tag} from "antd";
 import {listGeneratorVoByPageUsingPost} from "@/services/backend/generatorController";
 import Search from "antd/es/input/Search";
 import dayjs from "dayjs";
@@ -19,7 +19,7 @@ const Index: React.FC = () => {
   const [searchParams, setsearchParams] = useState<API.GeneratorQueryRequest>({
     ...DEFAULT_PAGE_PARAMS
   });
-  const [dataList, setDataList] = useState<API.GeneratorVO>([]);
+  const [dataList, setDataList] = useState<API.GeneratorVO[]>([]);
   const [total, setTotal] = useState<number>(0);
   const doSearch = async () => {
     try {
@@ -35,14 +35,34 @@ const Index: React.FC = () => {
   useEffect(() => {
     doSearch();
   }, [searchParams])
+
+  /**
+   * 标签列表
+   * @param tags
+   */
+  const tagsView = (tags: string[]) => {
+    if (!tags) {
+      return <></>
+    }
+    return tags.map((tag) =>
+      <span style={{marginBottom: 16}} key={tag}>
+        {<Tag key={tag}>{tag}</Tag>}
+      </span>
+    )
+  }
+  // @ts-ignore
   return (
-    <PageContainer>
+    <PageContainer title={<></>}>
       <Search
         allowClear
         enterButton="搜索"
         size="large"
-        onSearch={() => {
-
+        onSearch={(value) => {
+          setsearchParams({
+            ...DEFAULT_PAGE_PARAMS,
+            ...searchParams,
+            searchText: value
+          })
         }}
       />
       <Tabs
@@ -58,7 +78,14 @@ const Index: React.FC = () => {
           },
         ]}
       />
-      <QueryFilter defaultCollapsed labelAlign={"left"} span={12} labelWidth={"auto"}>
+      <QueryFilter defaultCollapsed={false} labelAlign={"left"} span={12} labelWidth={"auto"}
+                   onFinish={async (values: API.GeneratorQueryRequest) => {
+                     setsearchParams({
+                       ...DEFAULT_PAGE_PARAMS,
+                       ...values,
+                       searchText: searchParams.searchText
+                     })
+                   }}>
         <ProFormText name="name" label="名称"/>
         <ProFormText name="description" label="描述"/>
         <ProFormSelect name="tags" label="标签" mode={"tags"}/>
@@ -77,6 +104,18 @@ const Index: React.FC = () => {
           xxl: 4,
         }}
         dataSource={dataList}
+        pagination={{
+          current: searchParams.current,
+          pageSize: searchParams.pageSize,
+          total,
+          onChange(current: number, pageSize: number) {
+            setsearchParams({
+              ...searchParams,
+              current,
+              pageSize,
+            });
+          },
+        }}
         renderItem={(item) => (
           <List.Item>
             <Card hoverable cover={<img alt={item.picture} src={item.picture} style={{height: 230}}/>}>
@@ -93,6 +132,7 @@ const Index: React.FC = () => {
                   </Paragraph>
                 }
               />
+              {tagsView(item.tags)}
               <Flex justify={"space-between"} align={"center"}>
                 <span>{dayjs(item.createTime).format("YYYY/MM/DD")}</span>
                 <div>
