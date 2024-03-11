@@ -1,5 +1,6 @@
 package com.topawar.web.controller;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.topawar.web.annotation.AuthCheck;
@@ -9,7 +10,9 @@ import com.topawar.web.common.ResultUtils;
 import com.topawar.web.constant.UserConstant;
 import com.topawar.web.exception.BusinessException;
 import com.topawar.web.exception.ThrowUtils;
+import com.topawar.web.meta.Meta;
 import com.topawar.web.model.dto.generator.GeneratorAddRequest;
+import com.topawar.web.model.dto.generator.GeneratorEditRequest;
 import com.topawar.web.model.dto.generator.GeneratorQueryRequest;
 import com.topawar.web.model.dto.generator.GeneratorUpdateRequest;
 import com.topawar.web.model.entity.Generator;
@@ -139,6 +142,43 @@ public class GeneratorController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         return ResultUtils.success(generatorService.getGeneratorVO(Generator, request));
+    }
+
+
+    /**
+     * 编辑（用户）
+     *
+     * @param generatorEditRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/edit")
+    public BaseResponse<Boolean> editGenerator(@RequestBody GeneratorEditRequest generatorEditRequest, HttpServletRequest request) {
+        if (generatorEditRequest == null || generatorEditRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Generator generator = new Generator();
+        BeanUtils.copyProperties(generatorEditRequest, generator);
+        List<String> tags = generatorEditRequest.getTags();
+        generator.setTags(JSONUtil.toJsonStr(tags));
+        Meta.FileConfig fileConfig = generatorEditRequest.getFileConfig();
+        generator.setFileConfig(JSONUtil.toJsonStr(fileConfig));
+        Meta.ModelConfig modelConfig = generatorEditRequest.getModelConfig();
+        generator.setModelConfig(JSONUtil.toJsonStr(modelConfig));
+
+        // 参数校验
+        generatorService.validGenerator(generator, false);
+        User loginUser = userService.getLoginUser(request);
+        long id = generatorEditRequest.getId();
+        // 判断是否存在
+        Generator oldGenerator = generatorService.getById(id);
+        ThrowUtils.throwIf(oldGenerator == null, ErrorCode.NOT_FOUND_ERROR);
+        // 仅本人或管理员可编辑
+        if (!oldGenerator.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        boolean result = generatorService.updateById(generator);
+        return ResultUtils.success(result);
     }
 
     /**

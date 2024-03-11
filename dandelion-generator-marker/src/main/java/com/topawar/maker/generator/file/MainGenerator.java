@@ -95,7 +95,7 @@ public class MainGenerator extends GenerateTemplate{
     }
 
     @Override
-    protected void buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath) {
-        System.out.println("不生成产物包");
+    protected String buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath) {
+        return null;
     }
 }

@@ -1,10 +1,11 @@
 import {PageContainer, ProFormSelect, ProFormText, QueryFilter} from '@ant-design/pro-components';
 import React, {useEffect, useState} from 'react';
-import {Avatar, Card, Flex, List, message, Tabs, TabsProps, Tag} from "antd";
+import {Avatar, Card, Flex, List, message, Tabs, Tag} from "antd";
 import {listGeneratorVoByPageUsingPost} from "@/services/backend/generatorController";
 import Search from "antd/es/input/Search";
 import dayjs from "dayjs";
 import Paragraph from "antd/lib/typography/Paragraph";
+import PictureUploader from "@/components/PictureUploader";
 
 const DEFAULT_PAGE_PARAMS = {
   current: 1,
@@ -40,7 +41,7 @@ const Index: React.FC = () => {
    * 标签列表
    * @param tags
    */
-  const tagsView = (tags: string[]) => {
+  const tagsView = (tags?: string[]) => {
     if (!tags) {
       return <></>
     }

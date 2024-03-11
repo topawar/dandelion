@@ -17,6 +17,21 @@ export async function addGeneratorUsingPost(
   });
 }
 
+/** editGenerator POST /api/Generator/edit */
+export async function editGeneratorUsingPost(
+  body: API.GeneratorEditRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean_>('/api/Generator/edit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** getGeneratorVOById GET /api/Generator/get/vo */
 export async function getGeneratorVoByIdUsingGet(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

@@ -5,7 +5,6 @@ import defaultSettings from '../config/defaultSettings';
 import { AvatarDropdown } from './components/RightContent/AvatarDropdown';
 import { requestConfig } from './requestConfig';
 import {getLoginUserUsingGet as getLoginUser} from "@/services/backend/userController";
-import {message} from "antd";
 import logo from "@/assets/logo.jpg"
 const loginPath = '/user/login';
 

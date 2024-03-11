@@ -1,7 +1,9 @@
 package com.topawar.maker;
 
 
+import com.topawar.maker.generator.file.GenerateTemplate;
 import com.topawar.maker.generator.file.MainGenerator;
+import com.topawar.maker.generator.file.ZipGenerator;
 import freemarker.template.TemplateException;
 
 import java.io.IOException;
@@ -11,7 +13,8 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) throws TemplateException, IOException, InterruptedException {
-        MainGenerator mainGenerator = new MainGenerator();
-        mainGenerator.doGenerate();
+//        GenerateTemplate mainGenerator = new MainGenerator();
+        GenerateTemplate zipGenerator = new ZipGenerator();
+        zipGenerator.doGenerate();
     }
 }

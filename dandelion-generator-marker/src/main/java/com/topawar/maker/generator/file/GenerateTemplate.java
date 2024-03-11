@@ -3,6 +3,7 @@ package com.topawar.maker.generator.file;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.topawar.maker.meta.Meta;
 import com.topawar.maker.meta.MetaManager;
 import freemarker.template.TemplateException;
@@ -37,7 +38,7 @@ public class GenerateTemplate {
         buildDist(outputPath, sourceCopyDestPath, jarPath, shellOutputFilePath);
     }
 
-    protected void buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath){
+    protected String buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath){
         String distOutputPath = outputPath + "-dist";
         // 拷贝 jar 包
         String targetAbsolutePath = distOutputPath + File.separator + "target";
@@ -49,6 +50,7 @@ public class GenerateTemplate {
         FileUtil.copy(shellOutputFilePath+".bat", distOutputPath, true);
         // 拷贝源模板文件
         FileUtil.copy(sourceCopyDestPath, distOutputPath, true);
+        return distOutputPath;
     }
 
     protected String buildScript(String outputPath, String jarPath) {
@@ -126,6 +128,17 @@ public class GenerateTemplate {
         String sourceCopyDestPath = outputPath + File.separator + ".source";
         FileUtil.copy(sourcePath, sourceCopyDestPath, false);
         return sourceCopyDestPath;
+    }
+
+    /**
+     * 压缩产物包路径
+     * @param distPath
+     * @return
+     */
+    protected String buildZip(String distPath){
+        String zipPath=distPath+".zip";
+        ZipUtil.zip(distPath,zipPath);
+        return zipPath;
     }
 
 }
