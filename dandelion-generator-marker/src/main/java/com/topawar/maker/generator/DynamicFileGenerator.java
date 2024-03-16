@@ -1,4 +1,4 @@
-package com.topawar.maker.generator.file;
+package com.topawar.maker.generator;
 
 import cn.hutool.core.io.FileUtil;
 import freemarker.template.Configuration;

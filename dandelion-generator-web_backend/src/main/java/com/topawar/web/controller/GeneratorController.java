@@ -315,8 +315,7 @@ public class GeneratorController {
 
         //获取脚本执行路径，window下需要转义
         File execParentFile = generatorExec.getParentFile();
-//        String tranPath = execParentFile.getAbsolutePath().replace("\\", "/");
-        String tranPath = "D:\\Project\\ideaProject\\dandelion\\dandelion-generator-web_backend\\.temp\\use\\8\\dist\\exec.bat".replace("\\", "/");
+        String tranPath = execParentFile.getAbsolutePath().replace("\\", "/") + "/exec.bat";
         //传入转义后的路径
         String[] commands = new String[]{tranPath, "json-generate", "--file=" + modelJsonPath};
 

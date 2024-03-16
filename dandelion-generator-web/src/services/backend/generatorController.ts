@@ -106,3 +106,18 @@ export async function updateGeneratorUsingPost(
     ...(options || {}),
   });
 }
+
+/** useGenerator POST /api/Generator/use */
+export async function useGeneratorUsingPost(
+  body: API.GeneratorUseRequest,
+  options?: { [key: string]: any },
+) {
+  return request<any>('/api/Generator/use', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
