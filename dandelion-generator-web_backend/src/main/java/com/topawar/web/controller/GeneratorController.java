@@ -1,6 +1,8 @@
 package com.topawar.web.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ZipUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.topawar.web.annotation.AuthCheck;
@@ -10,11 +12,9 @@ import com.topawar.web.common.ResultUtils;
 import com.topawar.web.constant.UserConstant;
 import com.topawar.web.exception.BusinessException;
 import com.topawar.web.exception.ThrowUtils;
+import com.topawar.web.manager.CosManager;
 import com.topawar.web.meta.Meta;
-import com.topawar.web.model.dto.generator.GeneratorAddRequest;
-import com.topawar.web.model.dto.generator.GeneratorEditRequest;
-import com.topawar.web.model.dto.generator.GeneratorQueryRequest;
-import com.topawar.web.model.dto.generator.GeneratorUpdateRequest;
+import com.topawar.web.model.dto.generator.*;
 import com.topawar.web.model.entity.Generator;
 import com.topawar.web.model.entity.User;
 import com.topawar.web.model.vo.GeneratorVO;
@@ -26,7 +26,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 帖子接口
@@ -44,6 +52,9 @@ public class GeneratorController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private CosManager cosManager;
 
     // region 增删改查
 
@@ -240,5 +251,105 @@ public class GeneratorController {
         return ResultUtils.success(generatorService.getGeneratorVOPage(GeneratorPage, request));
     }
 
+
+    /**
+     * 使用代码生成器
+     *
+     * @param generatorUseRequest
+     * @param request
+     * @param response
+     */
+    @PostMapping("/use")
+    public void useGenerator(@RequestBody GeneratorUseRequest generatorUseRequest,
+                             HttpServletRequest request,
+                             HttpServletResponse response) throws IOException, InterruptedException {
+        User loginUser = userService.getLoginUser(request);
+        if (null == loginUser) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, "必须登录，才能使用");
+        }
+
+        Long id = generatorUseRequest.getId();
+        Map<String, Object> dataModel = generatorUseRequest.getDataModel();
+        Generator generator = generatorService.getById(id);
+        if (null == generator) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        //生成器存储路径
+        String distPath = generator.getDistPath();
+        if (StrUtil.isBlank(distPath)) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "产物包不存在");
+        }
+        //临时工作空间
+        String projectPath = System.getProperty("user.dir");
+        String tempDirPath = String.format("%s/.temp/use/%s", projectPath, id);
+
+        //压缩包文件路径
+        String zipFilePath = tempDirPath + "/dist.zip";
+        if (!FileUtil.exist(zipFilePath)) {
+            FileUtil.touch(zipFilePath);
+        }
+
+        //下载压缩包文件并解压
+        try {
+            cosManager.download(distPath, zipFilePath);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        File unzipDir = ZipUtil.unzip(zipFilePath);
+        String modelJsonPath = tempDirPath + "/DataModel.json";
+        FileUtil.writeUtf8String(JSONUtil.toJsonStr(dataModel), modelJsonPath);
+        File generatorExec = FileUtil.loopFiles(unzipDir, 2, null).stream()
+                .filter(file -> file.isFile() && "exec".equals(file.getName()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+        //赋予可执行权限
+        try {
+//            Set<PosixFilePermission> posixFilePermissions = PosixFilePermissions.fromString("rwxrwxrwx");
+//            Files.setPosixFilePermissions(generatorExec.toPath(), posixFilePermissions);
+            generatorExec.setReadable(true);
+            generatorExec.setWritable(true);
+            generatorExec.setExecutable(true);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "分配权限失败");
+        }
+
+        //获取脚本执行路径，window下需要转义
+        File execParentFile = generatorExec.getParentFile();
+//        String tranPath = execParentFile.getAbsolutePath().replace("\\", "/");
+        String tranPath = "D:\\Project\\ideaProject\\dandelion\\dandelion-generator-web_backend\\.temp\\use\\8\\dist\\exec.bat".replace("\\", "/");
+        //传入转义后的路径
+        String[] commands = new String[]{tranPath, "json-generate", "--file=" + modelJsonPath};
+
+        ProcessBuilder processBuilder = new ProcessBuilder(commands);
+        processBuilder.directory(execParentFile);
+        try {
+            Process process = processBuilder.start();
+            InputStream processInputStream = process.getInputStream();
+            //读取日志
+            BufferedReader reader = new BufferedReader(new InputStreamReader(processInputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+            //等待命令完成
+            int exitCode = process.waitFor();
+            System.out.println("命令执行完成：退出码：" + exitCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //返回生成结果的压缩包
+        String generatePath = execParentFile.getAbsolutePath() + "/generated";
+        String resultPath = tempDirPath + "/result.zip";
+        File zip = ZipUtil.zip(generatePath, resultPath);
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=" + zip.getName());
+        //写入响应，jdk自带
+        Files.copy(zip.toPath(), response.getOutputStream());
+        //异步清理文件
+        CompletableFuture.runAsync(() -> {
+            FileUtil.del(tempDirPath);
+        });
+    }
 
 }

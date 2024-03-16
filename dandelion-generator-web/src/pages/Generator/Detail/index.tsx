@@ -8,8 +8,7 @@ import FileConfig from "@/pages/Generator/Detail/compenments/FileConfig";
 import ModelConfig from "@/pages/Generator/Detail/compenments/ModelConfig";
 import AuthorInfo from "@/pages/Generator/Detail/compenments/Author";
 import {PageContainer} from "@ant-design/pro-components";
-import {downloadGeneratorByIdUsingGet, testDownloadUsingGet} from "@/services/backend/fileController";
-import {COS_HOST} from "@/constants";
+import {downloadGeneratorByIdUsingGet} from "@/services/backend/fileController";
 import {saveAs} from "file-saver";
 import {Link} from "umi";
 

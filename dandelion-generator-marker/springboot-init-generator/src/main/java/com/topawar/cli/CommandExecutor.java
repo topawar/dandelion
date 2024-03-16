@@ -3,6 +3,7 @@ package com.topawar.cli;
 import com.topawar.cli.command.ConfigCommand;
 import com.topawar.cli.command.GenerateCommand;
 import com.topawar.cli.command.ListCommand;
+import com.topawar.cli.command.JsonGeneratorCommand;
 import picocli.CommandLine;
 
 /**
@@ -17,7 +18,8 @@ public class CommandExecutor implements Runnable {
         commandLine = new CommandLine(this)
                 .addSubcommand(new ConfigCommand())
                 .addSubcommand(new GenerateCommand())
-                .addSubcommand(new ListCommand());
+                .addSubcommand(new ListCommand())
+                .addSubcommand(new JsonGeneratorCommand());
     }
 
     @Override

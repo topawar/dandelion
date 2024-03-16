@@ -14,7 +14,7 @@ public class MainGenerator {
 
 public static void doGenerate(DataModel dataModel) throws TemplateException, IOException {
     String inputRootPath =".source/acm-template-pro";
-    String outputRootPath ="D:/Project/ideaProject/dandelion/acm-template-pro";
+    String outputRootPath ="generated";
     String inputPath;
     String outputPath;
         boolean loop= dataModel.loop;

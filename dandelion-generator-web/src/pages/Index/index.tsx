@@ -5,7 +5,7 @@ import {listGeneratorVoByPageUsingPost} from "@/services/backend/generatorContro
 import Search from "antd/es/input/Search";
 import dayjs from "dayjs";
 import Paragraph from "antd/lib/typography/Paragraph";
-import PictureUploader from "@/components/PictureUploader";
+import {Link} from "umi";
 
 const DEFAULT_PAGE_PARAMS = {
   current: 1,
@@ -118,30 +118,32 @@ const Index: React.FC = () => {
           },
         }}
         renderItem={(item) => (
-          <List.Item>
-            <Card hoverable cover={<img alt={item.picture} src={item.picture} style={{height: 230}}/>}>
-              <Card.Meta
-                title={<a>{item.name}</a>}
-                description={
-                  <Paragraph
-                    ellipsis={{
-                      rows: 2,
-                    }}
-                    style={{height: 44}}
-                  >
-                    {item.description}
-                  </Paragraph>
-                }
-              />
-              {tagsView(item.tags)}
-              <Flex justify={"space-between"} align={"center"}>
-                <span>{dayjs(item.createTime).format("YYYY/MM/DD")}</span>
-                <div>
-                  <Avatar src={item.userVO?.userAvatar}></Avatar>
-                </div>
-              </Flex>
-            </Card>
-          </List.Item>
+            <List.Item>
+              <Link to={`/generator/detail/${item.id}`}>
+              <Card hoverable cover={<img alt={item.picture} src={item.picture} style={{height: 230}}/>}>
+                <Card.Meta
+                  title={<a>{item.name}</a>}
+                  description={
+                    <Paragraph
+                      ellipsis={{
+                        rows: 2,
+                      }}
+                      style={{height: 44}}
+                    >
+                      {item.description}
+                    </Paragraph>
+                  }
+                />
+                {tagsView(item.tags)}
+                <Flex justify={"space-between"} align={"center"}>
+                  <span>{dayjs(item.createTime).format("YYYY/MM/DD")}</span>
+                  <div>
+                    <Avatar src={item.userVO?.userAvatar}></Avatar>
+                  </div>
+                </Flex>
+              </Card>
+              </Link>
+            </List.Item>
         )}
       />
     </PageContainer>

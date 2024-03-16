@@ -56,8 +56,8 @@ public class GenerateCommand implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
                     if(loop){
-    CommandLine commandLine=new CommandLine(MainTemplateCommand.class);
-    commandLine.execute("--author", "--outputText");
+    CommandLine mainTemplateCommandLine=new CommandLine(MainTemplateCommand.class);
+    mainTemplateCommandLine.execute("--author", "--outputText");
                     }
         DataModel dataModel = new DataModel();
         BeanUtil.copyProperties(this, dataModel);

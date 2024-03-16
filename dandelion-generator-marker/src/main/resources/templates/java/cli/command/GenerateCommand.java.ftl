@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
         * ${modelInfo.description}
         */
     </#if>
-    @CommandLine.Option(names = {<#if modelInfo.abbr??>"-${modelInfo.abbr},"</#if>"--${modelInfo.fieldName}"},arity = "0..1",description = "${modelInfo.description}",interactive = true,echo = true)
+    @CommandLine.Option(names = {<#if modelInfo.abbr??>"-${modelInfo.abbr}",</#if>"--${modelInfo.fieldName}"},arity = "0..1",description = "${modelInfo.description}",interactive = true,echo = true)
     private ${modelInfo.type} ${modelInfo.fieldName} <#if modelInfo.defaultValue??>=${modelInfo.defaultValue?c} </#if>;
 </#macro>
 

@@ -7,7 +7,7 @@
   "createTime": "2024-2-20",
   "fileConfig": {
     "inputRootPath": ".source/acm-template-pro",
-    "outputRootPath": "D:/Project/ideaProject/dandelion/acm-template-pro",
+    "outputRootPath": "generated",
     "sourceRootPath": "D:/Project/ideaProject/dandelion/dandelion-generator-demo-projects/acm-template-pro",
     "type": "dir",
     "files": [

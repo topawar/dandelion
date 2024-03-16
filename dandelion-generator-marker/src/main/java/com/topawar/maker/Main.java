@@ -1,9 +1,8 @@
 package com.topawar.maker;
 
 
-import com.topawar.maker.generator.file.GenerateTemplate;
-import com.topawar.maker.generator.file.MainGenerator;
-import com.topawar.maker.generator.file.ZipGenerator;
+import com.topawar.maker.generator.GenerateTemplate;
+import com.topawar.maker.generator.ZipGenerator;
 import freemarker.template.TemplateException;
 
 import java.io.IOException;
