@@ -2,7 +2,7 @@ package com.topawar.web.model.vo;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
-import com.topawar.web.meta.Meta;
+import com.topawar.maker.meta.Meta;
 import com.topawar.web.model.entity.Generator;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;

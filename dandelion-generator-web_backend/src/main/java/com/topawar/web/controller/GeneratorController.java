@@ -5,6 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.topawar.maker.generator.GenerateTemplate;
+import com.topawar.maker.generator.ZipGenerator;
+import com.topawar.maker.meta.Meta;
+import com.topawar.maker.meta.MetaValidator;
 import com.topawar.web.annotation.AuthCheck;
 import com.topawar.web.common.BaseResponse;
 import com.topawar.web.common.ErrorCode;
@@ -13,13 +17,13 @@ import com.topawar.web.constant.UserConstant;
 import com.topawar.web.exception.BusinessException;
 import com.topawar.web.exception.ThrowUtils;
 import com.topawar.web.manager.CosManager;
-import com.topawar.web.meta.Meta;
 import com.topawar.web.model.dto.generator.*;
 import com.topawar.web.model.entity.Generator;
 import com.topawar.web.model.entity.User;
 import com.topawar.web.model.vo.GeneratorVO;
 import com.topawar.web.service.GeneratorService;
 import com.topawar.web.service.UserService;
+import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +33,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -351,4 +353,55 @@ public class GeneratorController {
         });
     }
 
+    @PostMapping("/make")
+    public void generatorMaker(@RequestBody GeneratorMakerRequest generatorMakerRequest
+            , HttpServletRequest request, HttpServletResponse response) throws TemplateException, IOException, InterruptedException {
+
+        User loginUser = userService.getLoginUser(request);
+        if (null == loginUser) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, "必须登录，才能使用");
+        }
+        String zipPath = generatorMakerRequest.getZipPath();
+        Meta meta = generatorMakerRequest.getMeta();
+        if (StrUtil.isBlank(zipPath)) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "资源包不存在");
+        }
+        Long id = loginUser.getId();
+        String projectPath = System.getProperty("user.dir");
+        String tempDirPath = String.format("%s/.temp/make/%s", projectPath, id);
+
+        //压缩包文件路径
+        String localZipFilePath = tempDirPath + "/project.zip";
+        if (!FileUtil.exist(localZipFilePath)) {
+            FileUtil.touch(localZipFilePath);
+        }
+
+        //下载压缩包文件并解压
+        try {
+            cosManager.download(zipPath, localZipFilePath);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        File unzipDir = ZipUtil.unzip(localZipFilePath);
+        String sourceRootPath = unzipDir.getAbsolutePath();
+        meta.getFileConfig().setSourceRootPath(sourceRootPath);
+        MetaValidator.doValidAndFill(meta);
+        String outputPath = String.format("%s/generated/%s", tempDirPath, meta.getName());
+        //调用maker项目制作生成器
+        GenerateTemplate zipGenerator = new ZipGenerator();
+        zipGenerator.doGenerate(meta, outputPath);
+        //打包生成好代码生成器
+        String suffix = "-dist.zip";
+        String zipFileName = meta.getName() + suffix;
+        String distZipPath = outputPath + suffix;
+
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=" + zipFileName);
+
+        Files.copy(Paths.get(distZipPath), response.getOutputStream());
+        //异步清理文件
+        CompletableFuture.runAsync(() -> {
+            FileUtil.del(tempDirPath);
+        });
+    }
 }

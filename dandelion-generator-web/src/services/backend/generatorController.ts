@@ -77,6 +77,21 @@ export async function listGeneratorVoByPageUsingPost(
   });
 }
 
+/** generatorMaker POST /api/Generator/make */
+export async function generatorMakerUsingPost(
+  body: API.GeneratorMakerRequest,
+  options?: { [key: string]: any },
+) {
+  return request<any>('/api/Generator/make', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** listMyGeneratorVOByPage POST /api/Generator/my/list/page/vo */
 export async function listMyGeneratorVoByPageUsingPost(
   body: API.GeneratorQueryRequest,

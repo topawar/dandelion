@@ -140,6 +140,11 @@ declare namespace API {
     version?: string;
   };
 
+  type GeneratorMakerRequest = {
+    meta?: Meta;
+    zipPath?: string;
+  };
+
   type GeneratorQueryRequest = {
     author?: string;
     basePackage?: string;
@@ -221,6 +226,17 @@ declare namespace API {
     userName?: string;
     userProfile?: string;
     userRole?: string;
+  };
+
+  type Meta = {
+    author?: string;
+    basePackage?: string;
+    createTime?: string;
+    description?: string;
+    fileConfig?: FileConfig;
+    modelConfig?: ModelConfig;
+    name?: string;
+    version?: string;
   };
 
   type ModelConfig = {

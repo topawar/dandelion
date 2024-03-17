@@ -21,6 +21,10 @@ public class GenerateTemplate {
         //获取生成文件的路径
         String projectPath = System.getProperty("user.dir");
         String outputPath = projectPath + File.separator + File.separator + meta.getName();
+        doGenerate(meta, outputPath);
+    }
+
+    public void doGenerate(Meta meta, String outputPath) throws TemplateException, IOException, InterruptedException {
         //不存在则创建
         if (!FileUtil.exist(outputPath)) {
             FileUtil.mkdir(outputPath);
@@ -30,7 +34,7 @@ public class GenerateTemplate {
         //生成代码文件
         generateCode(meta, outputPath);
         //封装 jar包
-        String jarPath = buildJar(meta,outputPath);
+        String jarPath = buildJar(meta, outputPath);
         //生成脚本文件
         String shellOutputFilePath = buildScript(outputPath, jarPath);
 
@@ -38,7 +42,8 @@ public class GenerateTemplate {
         buildDist(outputPath, sourceCopyDestPath, jarPath, shellOutputFilePath);
     }
 
-    protected String buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath){
+
+    protected String buildDist(String outputPath, String sourceCopyDestPath, String jarPath, String shellOutputFilePath) {
         String distOutputPath = outputPath + "-dist";
         // 拷贝 jar 包
         String targetAbsolutePath = distOutputPath + File.separator + "target";
@@ -47,7 +52,7 @@ public class GenerateTemplate {
         FileUtil.copy(jarAbsolutePath, targetAbsolutePath, true);
         // 拷贝脚本文件
         FileUtil.copy(shellOutputFilePath, distOutputPath, true);
-        FileUtil.copy(shellOutputFilePath+".bat", distOutputPath, true);
+        FileUtil.copy(shellOutputFilePath + ".bat", distOutputPath, true);
         // 拷贝源模板文件
         FileUtil.copy(sourceCopyDestPath, distOutputPath, true);
         return distOutputPath;
@@ -59,7 +64,7 @@ public class GenerateTemplate {
         return shellOutputFilePath;
     }
 
-    protected String buildJar(Meta meta,String outputPath) throws IOException, InterruptedException {
+    protected String buildJar(Meta meta, String outputPath) throws IOException, InterruptedException {
         JarGenerator.doGenerate(outputPath);
         String jarName = String.format("%s-%s-SNAPSHOT-jar-with-dependencies.jar", meta.getName(), meta.getVersion());
         String jarPath = "target/" + jarName;
@@ -68,8 +73,7 @@ public class GenerateTemplate {
 
     protected void generateCode(Meta meta, String outputPath) throws IOException, TemplateException {
         //读取resource
-        ClassPathResource classPathResource = new ClassPathResource("");
-        String resourceAbsolutePath = classPathResource.getAbsolutePath();
+        String resourceAbsolutePath = "";
 
         //java包路径
         String basePackage = meta.getBasePackage();
@@ -135,12 +139,13 @@ public class GenerateTemplate {
 
     /**
      * 压缩产物包路径
+     *
      * @param distPath
      * @return
      */
-    protected String buildZip(String distPath){
-        String zipPath=distPath+".zip";
-        ZipUtil.zip(distPath,zipPath);
+    protected String buildZip(String distPath) {
+        String zipPath = distPath + ".zip";
+        ZipUtil.zip(distPath, zipPath);
         return zipPath;
     }
 
