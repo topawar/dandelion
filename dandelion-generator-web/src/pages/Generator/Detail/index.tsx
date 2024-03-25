@@ -11,11 +11,14 @@ import {PageContainer} from "@ant-design/pro-components";
 import {downloadGeneratorByIdUsingGet} from "@/services/backend/fileController";
 import {saveAs} from "file-saver";
 import {Link} from "umi";
+import {useModel} from "@@/plugin-model";
+import {history} from "@umijs/max";
 
 const GeneratorDetail: React.FC = () => {
   const {id} = useParams();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<API.GeneratorVO>({})
+  const {initialState} = useModel('@@initialState');
 
   const loadData = async () => {
     setLoading(true)
@@ -52,6 +55,9 @@ const GeneratorDetail: React.FC = () => {
   }
 
   const downloadButton = () => {
+    if (!initialState?.currentUser) {
+      return
+    }
     return <Button icon={<DownloadOutlined/>} onClick={async () => {
       try {
         // @ts-ignore
@@ -68,6 +74,9 @@ const GeneratorDetail: React.FC = () => {
   }
 
   const editButton = () => {
+    if (!initialState?.currentUser) {
+      return
+    }
     return <Link to={`/generator/update?id=${data.id}`}>
       <Button icon={<EditOutlined/>}>编辑</Button>
     </Link>
@@ -91,9 +100,14 @@ const GeneratorDetail: React.FC = () => {
             <Typography.Paragraph type="secondary">作者：{data.author}</Typography.Paragraph>
             <div style={{marginBottom: 24}}/>
             <Space size="middle">
-              <Link to={`/generator/use/${data.id}`}>
-                <Button type="primary">立即使用</Button>
-              </Link>
+              <Button type="primary" onClick={() => {
+                if (!initialState?.currentUser) {
+                  message.error("登录后才可以使用");
+                  history.push("/user/login");
+                  return
+                }
+                history.push(`/generator/use/${data.id}`);
+              }}>立即使用</Button>
               {downloadButton()}
               {editButton()}
             </Space>

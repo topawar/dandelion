@@ -1,9 +1,11 @@
 package com.topawar.web.controller;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.topawar.maker.generator.GenerateTemplate;
 import com.topawar.maker.generator.ZipGenerator;
@@ -16,6 +18,7 @@ import com.topawar.web.common.ResultUtils;
 import com.topawar.web.constant.UserConstant;
 import com.topawar.web.exception.BusinessException;
 import com.topawar.web.exception.ThrowUtils;
+import com.topawar.web.manager.CacheManager;
 import com.topawar.web.manager.CosManager;
 import com.topawar.web.model.dto.generator.*;
 import com.topawar.web.model.entity.Generator;
@@ -25,6 +28,7 @@ import com.topawar.web.service.GeneratorService;
 import com.topawar.web.service.UserService;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,6 +61,9 @@ public class GeneratorController {
 
     @Resource
     private CosManager cosManager;
+
+    @Resource
+    private CacheManager cacheManager;
 
     // region 增删改查
 
@@ -229,6 +236,42 @@ public class GeneratorController {
         return ResultUtils.success(generatorService.getGeneratorVOPage(GeneratorPage, request));
     }
 
+    @PostMapping("/list/page/fast/vo")
+    public BaseResponse<Page<GeneratorVO>> listGeneratorVOByPageFast(@RequestBody GeneratorQueryRequest generatorQueryRequest,
+                                                                     HttpServletRequest request) {
+        long current = generatorQueryRequest.getCurrent();
+        long size = generatorQueryRequest.getPageSize();
+        String key = getCacheKey(generatorQueryRequest);
+        Object cacheValue = cacheManager.get(key);
+        if (null != cacheValue) {
+//            return ResultUtils.success(JSONUtil.toBean(cacheValue, new TypeReference<Page<GeneratorVO>>() {
+//            }, false));
+            return ResultUtils.success((Page<GeneratorVO>) cacheValue);
+        }
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        QueryWrapper<Generator> queryWrapper = generatorService.getQueryWrapper(generatorQueryRequest);
+        queryWrapper.select("id", "name", "description", "author", "picture", "createTime");
+        Page<Generator> generatorPage = generatorService.page(new Page<>(current, size),
+                queryWrapper);
+        cacheManager.put(key, generatorPage);
+        return ResultUtils.success(generatorService.getGeneratorVOPage(generatorPage, request));
+    }
+
+    /**
+     * 生成缓存key
+     *
+     * @param generatorQueryRequest
+     * @return
+     */
+    @NotNull
+    private static String getCacheKey(GeneratorQueryRequest generatorQueryRequest) {
+        String jsonStr = JSONUtil.toJsonStr(generatorQueryRequest);
+        String base64 = Base64.encode(jsonStr);
+        String key = "dandelion:page:query:" + base64;
+        return key;
+    }
+
     /**
      * 分页获取当前用户创建的资源列表
      *
@@ -281,16 +324,21 @@ public class GeneratorController {
         if (StrUtil.isBlank(distPath)) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "产物包不存在");
         }
+        String cacheFile = generatorService.getCacheFile(id);
         //临时工作空间
         String projectPath = System.getProperty("user.dir");
         String tempDirPath = String.format("%s/.temp/use/%s", projectPath, id);
+        String zipFilePath = null;
+        if (StrUtil.isNotBlank(cacheFile)) {
+            zipFilePath = cacheFile;
 
-        //压缩包文件路径
-        String zipFilePath = tempDirPath + "/dist.zip";
-        if (!FileUtil.exist(zipFilePath)) {
-            FileUtil.touch(zipFilePath);
+        } else {
+            //压缩包文件路径
+            zipFilePath = tempDirPath + "/dist.zip";
+            if (!FileUtil.exist(zipFilePath)) {
+                FileUtil.touch(zipFilePath);
+            }
         }
-
         //下载压缩包文件并解压
         try {
             cosManager.download(distPath, zipFilePath);
@@ -404,4 +452,5 @@ public class GeneratorController {
             FileUtil.del(tempDirPath);
         });
     }
+
 }

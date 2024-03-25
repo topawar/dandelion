@@ -51,4 +51,11 @@ public interface GeneratorService extends IService<Generator> {
      */
     Page<GeneratorVO> getGeneratorVOPage(Page<Generator> generatorPage, HttpServletRequest request);
 
+    /**
+     * 从缓存中读取文件
+     * @param id
+     * @return
+     */
+    String getCacheFile(Long id);
+
 }

@@ -2,6 +2,21 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
+/** cacheFile POST /api/file/cache */
+export async function cacheFileUsingPost(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.cacheFileUsingPOSTParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseString_>('/api/file/cache', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** downloadGeneratorById GET /api/file/download */
 export async function downloadGeneratorByIdUsingGet(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

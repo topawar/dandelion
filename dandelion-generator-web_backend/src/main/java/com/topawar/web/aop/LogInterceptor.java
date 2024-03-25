@@ -18,7 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *
  * @author topawar
  **/
-@Aspect
+//@Aspect
 @Component
 @Slf4j
 public class LogInterceptor {

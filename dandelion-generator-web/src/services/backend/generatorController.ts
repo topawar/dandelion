@@ -62,6 +62,21 @@ export async function listGeneratorByPageUsingPost(
   });
 }
 
+/** listGeneratorVOByPageFast POST /api/Generator/list/page/fast/vo */
+export async function listGeneratorVoByPageFastUsingPost(
+  body: API.GeneratorQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePageGeneratorVO_>('/api/Generator/list/page/fast/vo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** listGeneratorVOByPage POST /api/Generator/list/page/vo */
 export async function listGeneratorVoByPageUsingPost(
   body: API.GeneratorQueryRequest,

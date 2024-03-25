@@ -1,7 +1,10 @@
 import {PageContainer, ProFormSelect, ProFormText, QueryFilter} from '@ant-design/pro-components';
 import React, {useEffect, useState} from 'react';
 import {Avatar, Card, Flex, List, message, Tabs, Tag} from "antd";
-import {listGeneratorVoByPageUsingPost} from "@/services/backend/generatorController";
+import {
+  listGeneratorVoByPageFastUsingPost,
+  listGeneratorVoByPageUsingPost
+} from "@/services/backend/generatorController";
 import Search from "antd/es/input/Search";
 import dayjs from "dayjs";
 import Paragraph from "antd/lib/typography/Paragraph";
@@ -9,7 +12,7 @@ import {Link} from "umi";
 
 const DEFAULT_PAGE_PARAMS = {
   current: 1,
-  pageSize: 4,
+  pageSize: 12,
   sortField: "createTime",
   sortOrder: "descend"
 }
@@ -24,7 +27,7 @@ const Index: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const doSearch = async () => {
     try {
-      const res = await listGeneratorVoByPageUsingPost(searchParams);
+      const res = await listGeneratorVoByPageFastUsingPost(searchParams);
       setDataList(res.data?.records ?? [])
       setTotal(res.data?.total ?? 0)
     } catch (e: any) {

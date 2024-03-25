@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @TableName(value ="generator")
 @Data
-public class Generator implements Serializable {
+public class Generator implements Serializable,Cloneable{
     /**
      * id
      */
@@ -97,4 +97,9 @@ public class Generator implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public Generator clone() throws CloneNotSupportedException {
+        return (Generator) super.clone();
+    }
 }

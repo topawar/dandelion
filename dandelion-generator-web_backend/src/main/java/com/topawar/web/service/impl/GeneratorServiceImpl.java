@@ -153,7 +153,12 @@ public class GeneratorServiceImpl extends ServiceImpl<GeneratorMapper, Generator
         return generatorVOPage;
     }
 
-
+    public String getCacheFile(Long id) {
+        String projectPath = System.getProperty("user.dir");
+        String tempDirPath = String.format("%s/.temp/cache/%s", projectPath, id);
+        String cacheFilePath = tempDirPath + "/dist.zip";
+        return cacheFilePath;
+    }
 }
 
 

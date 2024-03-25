@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.COSObjectInputStream;
 import com.qcloud.cos.utils.IOUtils;
+import com.topawar.web.annotation.AuthCheck;
 import com.topawar.web.common.BaseResponse;
 import com.topawar.web.common.ErrorCode;
 import com.topawar.web.common.ResultUtils;
@@ -21,6 +22,8 @@ import com.topawar.web.service.UserService;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -151,10 +154,16 @@ public class FileController {
         if (generator == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-
         String filepath = generator.getDistPath();
         if (StrUtil.isBlank(filepath)) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "产物包不存在");
+        }
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=" + filepath);
+        String cacheFile = generatorService.getCacheFile(id);
+        if (FileUtil.exist(cacheFile)) {
+            Files.copy(Paths.get(cacheFile), response.getOutputStream());
+            return;
         }
 
         // 追踪事件
@@ -202,5 +211,35 @@ public class FileController {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件类型错误");
             }
         }
+    }
+
+    @AuthCheck(mustRole = "admin")
+    @PostMapping("/cache")
+    public BaseResponse<String> cacheFile(Long id, HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if (null == loginUser) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        if (null == id || id < 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "资源文件不存在");
+        }
+        Generator generator = generatorService.getById(id);
+        String distPath = generator.getDistPath();
+        if (StrUtil.isEmpty(distPath)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "资源文件不存在");
+        }
+        //设置缓存路径
+        String projectPath = System.getProperty("user.dir");
+        String tempDirPath = String.format("%s/.temp/cache/%s", projectPath, id);
+        String cacheFile = tempDirPath + "/dist.zip";
+        if (!FileUtil.exist(cacheFile)) {
+            FileUtil.touch(cacheFile);
+        }
+        try {
+            cosManager.download(distPath, cacheFile);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, e.getMessage());
+        }
+        return ResultUtils.success(cacheFile);
     }
 }

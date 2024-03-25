@@ -3,6 +3,7 @@ package com.topawar.maker.meta;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class Meta {
 
     @NoArgsConstructor
     @Data
-    public static class FileConfig {
+    public static class FileConfig implements Serializable {
         public String inputRootPath;
         public String outputRootPath;
         public String sourceRootPath;
@@ -32,7 +33,7 @@ public class Meta {
 
         @NoArgsConstructor
         @Data
-        public static class FileInfo {
+        public static class FileInfo implements Serializable{
             public String inputPath;
             public String outputPath;
             public String type;

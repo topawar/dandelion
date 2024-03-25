@@ -12,7 +12,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @author topawar
  */
 // todo 如需开启 Redis，须移除 exclude 中的内容
-@SpringBootApplication(exclude = {RedisAutoConfiguration.class})
+//@SpringBootApplication(exclude = {RedisAutoConfiguration.class})
+@SpringBootApplication
 @MapperScan("com.topawar.web.mapper")
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 public class MainApplication {

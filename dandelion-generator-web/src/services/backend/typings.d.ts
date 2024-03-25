@@ -65,6 +65,11 @@ declare namespace API {
     message?: string;
   };
 
+  type cacheFileUsingPOSTParams = {
+    /** id */
+    id?: number;
+  };
+
   type DeleteRequest = {
     id?: number;
   };
