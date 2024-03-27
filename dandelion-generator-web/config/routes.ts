@@ -1,6 +1,6 @@
 export default [
   {path: '/user', layout: false, routes: [{path: '/user/login', component: './User/Login'}]},
-  {path: '/', icon: 'cloudOnline', component: './Index', name: "首页"},
+  {path: '/', icon: 'CloudOutlined', component: './Index', name: "首页"},
   {
     path: '/test/file',
     icon: 'smile',
@@ -10,7 +10,7 @@ export default [
   },
   {
     path: '/generator/add',
-    icon: 'plus',
+    icon: 'CloudUploadOutlined',
     component: './Generator/Add',
     name: '创建生成器',
   },

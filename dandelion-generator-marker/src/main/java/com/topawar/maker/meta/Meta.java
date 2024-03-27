@@ -58,7 +58,6 @@ public class Meta {
             public String description;
             public Object defaultValue;
             public String abbr;
-            public boolean needGit;
             public String groupKey;
             public String groupName;
             public List<ModelInfo> models;

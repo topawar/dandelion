@@ -4,6 +4,7 @@ import {UploadProps} from "antd/lib";
 import {uploadFileUsingPost} from "@/services/backend/fileController";
 import Dragger from "antd/lib/upload/Dragger";
 import {InboxOutlined} from "@ant-design/icons";
+import {COS_HOST} from "@/constants";
 
 interface Props {
   biz: string,
@@ -43,17 +44,15 @@ const FileUploader: React.FC<Props> = (props) => {
   };
 
   return (
-    <Flex gap={16}>
-      <Dragger {...uploadProps}>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined/>
-        </p>
-        <p className="ant-upload-text">点击或拖拽文件上传</p>
-        <p className="ant-upload-hint">
-          {description}
-        </p>
-      </Dragger>
-    </Flex>
+    <Dragger {...uploadProps}>
+      <p className="ant-upload-drag-icon">
+        <InboxOutlined/>
+      </p>
+      <p className="ant-upload-text">点击或拖拽文件上传</p>
+      <p className="ant-upload-hint">
+        {description}
+      </p>
+    </Dragger>
   )
 }
 

@@ -171,7 +171,7 @@ const GeneratorAddPage: React.FC = () => {
           <ProFormText name="author" label="作者" placeholder="请输入作者"/>
           <ProFormSelect name="tags" mode={"tags"} label="标签"></ProFormSelect>
           <ProFormItem name={"picture"} label={"封面"}>
-            <PictureUploader biz={"user_avatar"}></PictureUploader>
+            <PictureUploader biz={"generator_picture"}></PictureUploader>
           </ProFormItem>
         </StepsForm.StepForm>
         <StepsForm.StepForm name="fileConfig" title="文件配置" onFinish={async (values) => {
@@ -190,7 +190,7 @@ const GeneratorAddPage: React.FC = () => {
           title="产物包"
         >
           <ProFormItem name="distPath">
-            <FileUploader biz={"generator_picture"} description={"请上传压缩文件"}></FileUploader>
+            <FileUploader biz={"generator_dist"} description={"请上传压缩文件"}></FileUploader>
             <GeneratorMaker meta={{...formEdit, ...modelConfig, ...fileConfig}}></GeneratorMaker>
           </ProFormItem>
         </StepsForm.StepForm>

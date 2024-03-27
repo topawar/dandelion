@@ -6,7 +6,7 @@ export const BACKEND_HOST_LOCAL = "http://localhost:9072/";
 /**
  * 线上后端地址
  */
-export const BACKEND_HOST_PROD = "https://yupi.icu";
+export const BACKEND_HOST_PROD = "http://106.54.220.112/";
 
 
 /**

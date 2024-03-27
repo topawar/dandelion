@@ -251,7 +251,7 @@ public class GeneratorController {
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         QueryWrapper<Generator> queryWrapper = generatorService.getQueryWrapper(generatorQueryRequest);
-        queryWrapper.select("id", "name", "description", "author", "picture", "createTime");
+        queryWrapper.select("id", "name", "description", "author", "picture","tags","createTime");
         Page<Generator> generatorPage = generatorService.page(new Page<>(current, size),
                 queryWrapper);
         cacheManager.put(key, generatorPage);
@@ -330,20 +330,20 @@ public class GeneratorController {
         String tempDirPath = String.format("%s/.temp/use/%s", projectPath, id);
         String zipFilePath = null;
         if (StrUtil.isNotBlank(cacheFile)) {
+            log.info("cache不为空，通过缓存下载");
             zipFilePath = cacheFile;
-
         } else {
             //压缩包文件路径
             zipFilePath = tempDirPath + "/dist.zip";
             if (!FileUtil.exist(zipFilePath)) {
                 FileUtil.touch(zipFilePath);
             }
-        }
-        //下载压缩包文件并解压
-        try {
-            cosManager.download(distPath, zipFilePath);
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            //下载压缩包文件并解压
+            try {
+                cosManager.download(distPath, zipFilePath);
+            } catch (Exception e) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            }
         }
         File unzipDir = ZipUtil.unzip(zipFilePath);
         String modelJsonPath = tempDirPath + "/DataModel.json";
@@ -365,7 +365,8 @@ public class GeneratorController {
 
         //获取脚本执行路径，window下需要转义
         File execParentFile = generatorExec.getParentFile();
-        String tranPath = execParentFile.getAbsolutePath().replace("\\", "/") + "/exec.bat";
+//        String tranPath = generatorExec.getAbsolutePath().replace("\\", "/");
+        String tranPath = generatorExec.getAbsolutePath();
         //传入转义后的路径
         String[] commands = new String[]{tranPath, "json-generate", "--file=" + modelJsonPath};
 

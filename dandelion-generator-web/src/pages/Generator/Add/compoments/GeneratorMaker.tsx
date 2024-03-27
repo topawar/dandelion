@@ -39,7 +39,7 @@ const doSubmit = async (values: API.GeneratorMakerRequest) => {
 
   // 文件列表转 url
   // @ts-ignore
-  values.zipFilePath = zipFilePath[0].response;
+  values.zipPath = zipFilePath[0].response;
 
   try {
     const blob = await generatorMakerUsingPost(

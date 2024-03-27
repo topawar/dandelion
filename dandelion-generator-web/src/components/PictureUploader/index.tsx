@@ -26,7 +26,7 @@ const PictureUploader: React.FC<Props> = (props) => {
         const res = await uploadFileUsingPost({
           biz
         }, {}, fileObj.file)
-        const fullPath = res.data;
+        const fullPath = COS_HOST + res.data;
         onChange?.(fullPath ?? '')
         fileObj.onSuccess(fullPath)
       } catch (e: any) {

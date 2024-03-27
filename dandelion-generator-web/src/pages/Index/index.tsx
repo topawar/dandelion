@@ -45,9 +45,10 @@ const Index: React.FC = () => {
    * @param tags
    */
   const tagsView = (tags?: string[]) => {
-    if (!tags) {
-      return <></>
+    if (!tags || !Array.isArray(tags)) {
+      return <></>;
     }
+
     return tags.map((tag) =>
       <span style={{marginBottom: 16}} key={tag}>
         {<Tag key={tag}>{tag}</Tag>}
@@ -57,18 +58,20 @@ const Index: React.FC = () => {
   // @ts-ignore
   return (
     <PageContainer title={<></>}>
-      <Search
-        allowClear
-        enterButton="搜索"
-        size="large"
-        onSearch={(value) => {
-          setsearchParams({
-            ...DEFAULT_PAGE_PARAMS,
-            ...searchParams,
-            searchText: value
-          })
-        }}
-      />
+      <Flex justify={"center"}>
+        <Search
+          allowClear
+          enterButton="搜索"
+          size="large"
+          onSearch={(value) => {
+            setsearchParams({
+              ...DEFAULT_PAGE_PARAMS,
+              ...searchParams,
+              searchText: value
+            })
+          }}
+        />
+      </Flex>
       <Tabs
         defaultActiveKey="1"
         items={[
@@ -82,7 +85,8 @@ const Index: React.FC = () => {
           },
         ]}
       />
-      <QueryFilter defaultCollapsed={false} labelAlign={"left"} span={12} labelWidth={"auto"}
+      <QueryFilter defaultCollapsed={false} labelAlign="left" span={12} labelWidth={"auto"}
+                   style={{padding: '16px 0' }}
                    onFinish={async (values: API.GeneratorQueryRequest) => {
                      setsearchParams({
                        ...DEFAULT_PAGE_PARAMS,
